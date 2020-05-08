@@ -3,8 +3,11 @@ import importlib
 import json
 from handlers.errors import HandlerNotAllowed
 from handlers.config import load_config
+import logging
 import pdb
 from reddit import reddit
+import sys
+import traceback
 
 
 class Bot():
@@ -33,4 +36,17 @@ class Bot():
         self.handler.run()
         
 
-Bot().start()
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
+    config = load_config('./config.json')
+    if 'run_in_loop' in config.keys() and config['run_in_loop'] == True:
+        while True:
+            try:
+                Bot().start()
+            except KeyboardInterrupt:
+                sys.exit(0)
+            except Exception:
+                traceback.print_exc()
+    else:
+        Bot().start()
