@@ -25,6 +25,20 @@ class SubmissionStream():
         else:
             print(submission.url)
 
-    def f(self, **kwargs):
-        print(kwargs)
-        pass
+    def cmd_reply(self, submission):
+        submission.reply(self.config['submission_reply_body'])
+
+    def cmd_add_submission_flair(self, submission):
+        if not self.config['submission_flair_condition']:
+            return
+
+        attributes = self.config['submission_flair_attributes']
+        submission.mod.flair(attributes)
+
+    def cmd_add_user_flair(self, submission):
+        if not self.config['submission_author_flair_condition']:
+            return 
+
+        redditor = submission.author
+        attributes = self.config['submission_flair_attributes']
+        redditor.mod.flair(attributes)
