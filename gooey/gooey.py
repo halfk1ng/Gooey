@@ -10,7 +10,7 @@ import sys
 import traceback
 
 
-class Bot():
+class Gooey:
 
     config = load_config('./config.json')
 
@@ -43,10 +43,10 @@ if __name__ == '__main__':
     if 'run_in_loop' in config.keys() and config['run_in_loop'] == True:
         while True:
             try:
-                Bot().start()
+                Gooey().start()
             except KeyboardInterrupt:
                 sys.exit(0)
             except Exception:
                 traceback.print_exc()
     else:
-        Bot().start()
+        Gooey().start()
