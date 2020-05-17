@@ -1,5 +1,6 @@
 from handlers.errors import FunctionNotAllowed
 
+
 class SubmissionStream():
     def __init__(self, reddit, config):
         self.reddit = reddit
@@ -15,7 +16,7 @@ class SubmissionStream():
 
     def run(self):
         subreddit = self.config['subreddit']
-        
+
         for submission in self.reddit.subreddit(subreddit).stream.submissions(**self.action_kwargs):
             self.fn(submission)
 
@@ -42,3 +43,6 @@ class SubmissionStream():
         redditor = submission.author
         attributes = self.config['submission_flair_attributes']
         redditor.mod.flair(attributes)
+
+    def cmd_enforce_top_level_comment(self, submission):
+        pass

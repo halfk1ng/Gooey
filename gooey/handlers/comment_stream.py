@@ -1,5 +1,6 @@
 from handlers.errors import FunctionNotAllowed
 
+
 class CommentStream():
     def __init__(self, reddit, config):
         self.reddit = reddit
@@ -44,7 +45,6 @@ class CommentStream():
 
             if command_text in comment_body:
                 self.cmd_call_command_function(comment, command)
-
 
     def cmd_call_command_function(self, comment, command_attributes):
         pass
