@@ -1,2 +1,0 @@
-class DbNotImplemented(Exception):
-    pass

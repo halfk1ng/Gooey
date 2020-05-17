@@ -47,4 +47,4 @@ class CommentStream():
                 self.cmd_call_command_function(comment, command)
 
     def cmd_call_command_function(self, comment, command_attributes):
-        pass
+        raise NotImplementedError

@@ -45,4 +45,4 @@ class SubmissionStream():
         redditor.mod.flair(attributes)
 
     def cmd_enforce_top_level_comment(self, submission):
-        pass
+        raise NotImplementedError

@@ -2,7 +2,7 @@ from env import set_vars
 import importlib
 import json
 from handlers.errors import HandlerNotAllowed
-from handlers.config import load_config
+from handlers.config import *
 import logging
 import pdb
 from reddit import reddit
@@ -13,18 +13,14 @@ import traceback
 class Gooey:
 
     config = load_config('./config.json')
+    _ALLOWED_HANDLERS = load_allowed_handlers('./gooey/handlers')
 
     def __init__(self):
         self.handler = self.select_handler()
 
     def select_handler(self):
-        # TODO: Break allowed_handlers out into its own config file
-        allowed_handlers = [
-            'submission_stream'
-        ]
-
         handler = 'handlers.{}'.format(self.config['handler'])
-        if self.config['handler'] in allowed_handlers:
+        if self.config['handler'] in self._ALLOWED_HANDLERS:
             class_ = ''.join(x.title() for x in self.config['handler'].split('_'))
             module = importlib.import_module(handler)
             handler_class = getattr(module, class_)
