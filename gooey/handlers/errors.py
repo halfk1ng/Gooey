@@ -3,3 +3,6 @@ class HandlerNotAllowed(Exception):
 
 class FunctionNotAllowed(Exception):
     pass
+
+class CommandNotMatched(Exception):
+    pass
