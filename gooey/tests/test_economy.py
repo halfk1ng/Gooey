@@ -20,6 +20,10 @@ class TestEconomy(unittest.TestCase):
 
     def setUp(self):
         if os.path.exists(self.DB_PATH):
+            os.remove(self.DB_PATH)
+
+    def tearDown(self):
+        if os.path.exists(self.DB_PATH):
             os.remove(self.DB_PATH) 
 
     def test_db_creation(self):
