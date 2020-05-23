@@ -1,4 +1,5 @@
 from handlers.errors import FunctionNotAllowed, CommandNotMatched
+from handlers.logger import Logger
 from database.db import Database
 import re
 import sqlite3
@@ -30,7 +31,7 @@ class Economy():
                 self.cmd_call_command_function(comment, command)
 
     def format_command_regex(self, command_attributes):
-        command_text = command_attributes['command_text']
+        command_text = command_attributes['text']
         escaped_command = ''.join([self.escaped_character(character) for character in command_text])
 
         return self.command_regex_template.format(escaped_command)
@@ -47,7 +48,7 @@ class Economy():
             regex = re.compile(self.format_command_regex(command_attributes))
 
             value = int(re.search(regex, text)[0])
-        except (IndexError, ValueError) as e:
+        except (IndexError, ValueError, TypeError) as e:
             raise CommandNotMatched('Regular expression error: {}'.format(e))
 
         return value
@@ -56,7 +57,7 @@ class Economy():
         user_inventory = self.retrieve_user_inventory(user)
         items, funds = (user_inventory['items_available'], user_inventory['funds_available'])
         
-        return 'Items Available: {}\n\nFunds Available: {}'.format(items, funds)
+        return '\n\nItems Available: {}\n\nFunds Available: {}'.format(items, funds)
 
     def retrieve_user_inventory(self, user):
         db = Database()
@@ -75,7 +76,7 @@ class Economy():
         db = Database()
         sql = """
             UPDATE economy_users
-            SET items_available = items_available + ?, funds_available = funds_available + ?
+            SET items_available = items_available + ?, funds_available = ?
             WHERE economy_users.reddit_id = ?
         """
         db.connection.cursor().execute(sql, (transaction, funds, user.id))
@@ -141,6 +142,7 @@ class Economy():
         if self.fn is None:
             raise FunctionNotAllowed('Function "{}" not allowed'.format(fn_name))
 
+        Logger().log_function_call(self.fn, command_attributes, comment=comment)
         self.fn(comment, command_attributes)
 
     def cmd_reload_funds(self, comment, command_attributes):
@@ -162,19 +164,20 @@ class Economy():
     def cmd_buy(self, comment, command_attributes):
         item_price = command_attributes['item_price']
         user = comment.author
-        user_inventory = self.retrieve_user_inventory(user)['items_available']
+        user_inventory = self.retrieve_user_inventory(user)
 
         try:
-            num_purchased = self.find_command_value(command_attributes)
+            num_purchased = self.find_command_value(command_attributes, comment.body)
         except CommandNotMatched:
             return 
 
         current_funds = user_inventory['funds_available']
+        cost = item_price * num_purchased
 
-        if current_funds >= item_price * num_purchased:
-            current_funds -= num_purchased * item_price
+        if current_funds >= cost:
+            current_funds -= cost
 
-            self.store_changes(user, current_funds, num_purchased)
+            self.store_changes(user, current_funds, transaction=num_purchased)
 
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s inventory has increased by {}, and funds decreased by {}!\n\nCurrent stats: {}".format(user.name, num_purchased, num_purchased * item_price, inventory_text))
@@ -189,15 +192,16 @@ class Economy():
         user_inventory = self.retrieve_user_inventory(user)
 
         try:
-            num_sold = self.find_command_value(command_attributes)
+            num_sold = self.find_command_value(command_attributes, comment.body)
         except CommandNotMatched:
             return 
 
         if num_sold <= user_inventory['items_available']:
             current_funds = user_inventory['funds_available']
             current_funds += num_sold * item_price
+            transaction = num_sold * -1
 
-            self.store_changes(user, current_funds, num_sold)
+            self.store_changes(user, current_funds, transaction=transaction)
 
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s inventory has decreased by {}, and funds increased by {}!\n\nCurrent stats: {}".format(user.name, num_sold, num_sold * item_price, inventory_text))
@@ -206,17 +210,17 @@ class Economy():
             pass
 
     def cmd_add(self, comment, command_attributes):
-        user = comment.parent.author if command_attributes['award_to_parent'] == True else comment.author
+        award_to_parent = 'award_to_parent' in command_attributes and command_attributes['award_to_parent'] == True
+        user = comment.parent.author if award_to_parent else comment.author
         user_inventory = self.retrieve_user_inventory(user)
 
-        current_amount = user_inventory['items_available'] + 1
         current_funds = user_inventory['funds_available']
 
-        self.store_changes(user, current_funds, num_sold)
+        self.store_changes(user, current_funds, 1)
         inventory_text = self.user_inventory_message(user)
         comment.reply("{}'s inventory has increased by 1!\n\nCurrent stats: {}".format(user.name, inventory_text))
 
-        if command_attributes['update_user_flair'] == True:
+        if 'update_user_flair' in command_attributes and command_attributes['update_user_flair'] == True:
             self.cmd_set_user_flair_text(user, command_attributes)
 
     def cmd_list_inventory(self, comment, command_attributes):

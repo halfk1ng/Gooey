@@ -3,7 +3,6 @@ import importlib
 import json
 from handlers.errors import HandlerNotAllowed
 from handlers.config import *
-import logging
 import pdb
 from reddit import reddit
 import sys
@@ -33,8 +32,6 @@ class Gooey:
         
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-
     config = load_config('./config.json')
     if 'run_in_loop' in config.keys() and config['run_in_loop'] == True:
         while True:
