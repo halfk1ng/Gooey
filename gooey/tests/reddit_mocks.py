@@ -6,12 +6,12 @@ class MockReddit:
         self.user = MockUser()
 
 class MockComment:
-    def __init__(self, comment_id=None, author=None, body='test', parent=None):
+    def __init__(self, comment_id=None, author=None, body='test', parent=None, replies=None):
         self.id = comment_id if comment_id else str(uuid.uuid1())
         self.author = author if author else MockUser()
         self.body = body
-        self.replies = []
         self.parent = parent
+        self.replies = [] if replies == None else replies
 
     def reply(self, text):
         comment = MockComment(parent=self)
