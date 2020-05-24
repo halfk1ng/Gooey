@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 import pdb
-sys.path.append(os.path.abspath('../gooey/gooey'))
+sys.path.append(os.path.abspath('./gooey'))
 from handlers.economy import Economy
 from database.db import Database
 from tests.reddit_mocks import *
