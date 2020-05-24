@@ -70,7 +70,7 @@ class Economy():
 
         db.close()
 
-        return self.format_data(user_record)
+        return user_record
 
     def store_changes(self, user, funds, transaction=0):
         db = Database()
@@ -105,20 +105,6 @@ class Economy():
         db.connection.cursor().execute(sql).fetchone()
         db.close()
 
-    def format_data(self, data):
-        db = Database()
-        sql = 'SELECT * FROM economy_users LIMIT 1'
-        column_names = db.connection.cursor().execute(sql).description
-        db.close()
-
-        d = {}
-        for index in range(0, len(column_names)):
-            column = column_names[index][0]
-            value = data[index]
-
-            d[column] = value
-
-        return d
         
     def cmd_find_economy_command(self, comment):
         for command in self.config['economy_commands']:
