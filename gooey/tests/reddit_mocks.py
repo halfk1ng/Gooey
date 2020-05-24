@@ -12,11 +12,19 @@ class MockComment:
         self.body = body
         self.parent = parent
         self.replies = [] if replies == None else replies
+        self.last_reply = self.last_reply_body()
 
     def reply(self, text):
-        comment = MockComment(parent=self)
+        comment = MockComment(body=text, parent=self)
         self.replies.append(comment)
+        self.last_reply = self.last_reply_body()
         return comment
+
+    def last_reply_body(self):
+        if len(self.replies) > 0:
+            return self.replies[-1].body
+        else:
+            return []
 
 class MockUser:
     def __init__(self, user_id=None, name='RedditGooeyBot'):

@@ -169,7 +169,8 @@ class Economy():
         try:
             num_purchased = self.find_command_value(command_attributes, comment.body)
         except CommandNotMatched:
-            return 
+            comment.reply('Command is a match, but is missing extra details. Transaction unable to be processed.')
+            return
 
         current_funds = user_inventory['funds_available']
         cost = item_price * num_purchased
@@ -182,9 +183,8 @@ class Economy():
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s inventory has increased by {}, and funds decreased by {}!\n\nCurrent stats: {}".format(user.name, num_purchased, num_purchased * item_price, inventory_text))
         else:
-            # TODO: Make a reply with no changes
-            pass
-
+            inventory_text = self.user_inventory_message(user)
+            comment.reply("{}'s transaction was not completed. REASON: Not enough funds. Needed {}.\n\nCurrent stats: {}".format(user.name, cost, inventory_text))
 
     def cmd_sell(self, comment, command_attributes):
         item_price = command_attributes['item_price']
@@ -194,7 +194,8 @@ class Economy():
         try:
             num_sold = self.find_command_value(command_attributes, comment.body)
         except CommandNotMatched:
-            return 
+            comment.reply('Command is a match, but is missing extra details. Transaction unable to be processed.')
+            return
 
         if num_sold <= user_inventory['items_available']:
             current_funds = user_inventory['funds_available']
@@ -206,12 +207,13 @@ class Economy():
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s inventory has decreased by {}, and funds increased by {}!\n\nCurrent stats: {}".format(user.name, num_sold, num_sold * item_price, inventory_text))
         else:
-            # TODO: Make a reply with no changes
-            pass
+            inventory_text = self.user_inventory_message(user)
+            comment.reply("{}'s transaction was not completed. REASON: Not enough items. Needed {}.\n\nCurrent stats: {}".format(user.name, num_sold, inventory_text))
 
     def cmd_add(self, comment, command_attributes):
         award_to_parent = 'award_to_parent' in command_attributes and command_attributes['award_to_parent'] == True
-        user = comment.parent.author if award_to_parent else comment.author
+        comment = comment.parent if award_to_parent else comment
+        user = comment.author
         user_inventory = self.retrieve_user_inventory(user)
 
         current_funds = user_inventory['funds_available']

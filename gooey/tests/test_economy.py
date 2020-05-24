@@ -53,17 +53,21 @@ class TestEconomy(unittest.TestCase):
         comment = MockComment(author=user)
         economy = Economy(MockReddit(), self.BASE_CONFIG)
 
-        economy.cmd_reload_funds(comment, command_attributes)
+        self.assertEqual(len(comment.replies), 0)
 
+        economy.cmd_reload_funds(comment, command_attributes)
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 100)
+        self.assertEqual(len(comment.replies), 1)
+        self.assertIn('funds were reloaded', comment.last_reply)
 
         # Should not reload if over the threshold
         economy.cmd_reload_funds(comment, command_attributes)
-
         inventory = economy.retrieve_user_inventory(user)
 
         self.assertEqual(inventory['funds_available'], 100)
+        self.assertEqual(len(comment.replies), 2)
+        self.assertIn("funds weren't reloaded", comment.last_reply)
 
     def test_cmd_buy(self):
         # Should purchase if the user has the funds available
@@ -81,17 +85,22 @@ class TestEconomy(unittest.TestCase):
         comment = MockComment(author=user, body='!buy 10')
         economy = Economy(MockReddit(), self.BASE_CONFIG)
 
+        self.assertEqual(len(comment.replies), 0)
+
         economy.cmd_reload_funds(comment, reload_command_attributes)
 
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 100)
         self.assertEqual(inventory['items_available'], 0)
+        self.assertEqual(len(comment.replies), 1)
 
         economy.cmd_buy(comment, buy_command_attributes)
 
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 10)
+        self.assertEqual(len(comment.replies), 2)
+        self.assertIn('inventory has increased', comment.last_reply)
 
         # Should not allow purchase if no funds
         economy.cmd_buy(comment, buy_command_attributes)
@@ -99,6 +108,8 @@ class TestEconomy(unittest.TestCase):
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 10)
+        self.assertEqual(len(comment.replies), 3)
+        self.assertIn('transaction was not completed', comment.last_reply)
 
     def test_cmd_sell(self):
         # Should sell if the user has the items available
@@ -122,12 +133,15 @@ class TestEconomy(unittest.TestCase):
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 10)
+        self.assertEqual(len(sell_comment.replies), 0)
 
         economy.cmd_sell(sell_comment, sell_command_attributes)
 
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 100)
         self.assertEqual(inventory['items_available'], 0)
+        self.assertEqual(len(sell_comment.replies), 1)
+        self.assertIn('inventory has decreased', sell_comment.last_reply)
 
         # Should not allow sell if no items
         economy.cmd_sell(sell_comment, sell_command_attributes)
@@ -135,6 +149,8 @@ class TestEconomy(unittest.TestCase):
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 100)
         self.assertEqual(inventory['items_available'], 0)
+        self.assertEqual(len(sell_comment.replies), 2)
+        self.assertIn('transaction was not completed', sell_comment.last_reply)
 
     def test_cmd_add(self):
         # Should add to comment user
@@ -142,20 +158,24 @@ class TestEconomy(unittest.TestCase):
             'text': '!add'
         }
 
-        user = MockUser()
-        parent_comment = MockComment(author=MockUser())
-        comment = MockComment(author=user, body='!add', parent=parent_comment)
+        parent_commenter = MockUser()
+        parent_comment = MockComment(author=parent_commenter)
+        comment = parent_comment.reply('!add')
+        user = comment.author
         economy = Economy(MockReddit(), self.BASE_CONFIG)
 
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 0)
+        self.assertEqual(len(comment.replies), 0)
 
         economy.cmd_add(comment, self_add_command_attributes)
 
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 1)
+        self.assertEqual(len(comment.replies), 1)
+        self.assertIn('inventory has increased by 1', comment.last_reply)
 
         # Should add to comment parent user if 'award_to_parent' flag set
         parent_add_command_attributes = {
@@ -163,17 +183,18 @@ class TestEconomy(unittest.TestCase):
             'award_to_parent': True
         }
 
-        parent_user = comment.parent.author
-
-        inventory = economy.retrieve_user_inventory(parent_user)
+        inventory = economy.retrieve_user_inventory(parent_commenter)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 0)
+        self.assertEqual(len(parent_comment.replies), 1)
 
         economy.cmd_add(comment, parent_add_command_attributes)
 
-        inventory = economy.retrieve_user_inventory(parent_user)
+        inventory = economy.retrieve_user_inventory(parent_commenter)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 1)
+        self.assertEqual(len(parent_comment.replies), 2)
+        self.assertIn('inventory has increased by 1', parent_comment.last_reply)
 
     def test_cmd_list_inventory(self):
         # Should reply to original comment with inventory
@@ -190,3 +211,5 @@ class TestEconomy(unittest.TestCase):
         economy.cmd_list_inventory(comment)
 
         self.assertEqual(len(comment.replies), 1)
+        self.assertIn('Items Available', comment.last_reply)
+        self.assertIn('Funds Available', comment.last_reply)
