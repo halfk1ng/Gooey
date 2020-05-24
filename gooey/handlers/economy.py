@@ -72,14 +72,14 @@ class Economy():
 
         return user_record
 
-    def store_changes(self, user, funds, transaction=0):
+    def store_changes(self, user, funds_delta=0, items_delta=0):
         db = Database()
         sql = """
             UPDATE economy_users
-            SET items_available = items_available + ?, funds_available = ?
+            SET items_available = items_available + ?, funds_available = funds_available + ?
             WHERE economy_users.reddit_id = ?
         """
-        db.connection.cursor().execute(sql, (transaction, funds, user.id))
+        db.connection.cursor().execute(sql, (items_delta, funds_delta, user.id))
         db.connection.commit()
         db.close()
 
@@ -140,7 +140,7 @@ class Economy():
 
         if current_funds <= reload_threshold:
             current_funds += reload_amount
-            self.store_changes(user, current_funds)
+            self.store_changes(user, funds_delta=reload_amount)
         
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s funds were reloaded!\n\nCurrent inventory: {}".format(user.name, inventory_text))
@@ -162,12 +162,10 @@ class Economy():
         cost = item_price * num_purchased
 
         if current_funds >= cost:
-            current_funds -= cost
-
-            self.store_changes(user, current_funds, transaction=num_purchased)
+            self.store_changes(user, funds_delta=(-1 * cost), items_delta=num_purchased)
 
             inventory_text = self.user_inventory_message(user)
-            comment.reply("{}'s inventory has increased by {}, and funds decreased by {}!\n\nCurrent stats: {}".format(user.name, num_purchased, num_purchased * item_price, inventory_text))
+            comment.reply("{}'s inventory has increased by {}, and funds decreased by {}!\n\nCurrent stats: {}".format(user.name, num_purchased, cost, inventory_text))
         else:
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s transaction was not completed. REASON: Not enough funds. Needed {}.\n\nCurrent stats: {}".format(user.name, cost, inventory_text))
@@ -185,10 +183,11 @@ class Economy():
 
         if num_sold <= user_inventory['items_available']:
             current_funds = user_inventory['funds_available']
-            current_funds += num_sold * item_price
+            cost = num_sold * item_price
+            current_funds += cost
             transaction = num_sold * -1
 
-            self.store_changes(user, current_funds, transaction=transaction)
+            self.store_changes(user, funds_delta=cost, items_delta=transaction)
 
             inventory_text = self.user_inventory_message(user)
             comment.reply("{}'s inventory has decreased by {}, and funds increased by {}!\n\nCurrent stats: {}".format(user.name, num_sold, num_sold * item_price, inventory_text))
@@ -204,7 +203,7 @@ class Economy():
 
         current_funds = user_inventory['funds_available']
 
-        self.store_changes(user, current_funds, 1)
+        self.store_changes(user, items_delta=1)
         inventory_text = self.user_inventory_message(user)
         comment.reply("{}'s inventory has increased by 1!\n\nCurrent stats: {}".format(user.name, inventory_text))
 
