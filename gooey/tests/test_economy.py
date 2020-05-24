@@ -24,18 +24,18 @@ class TestEconomy(unittest.TestCase):
 
     def tearDown(self):
         if os.path.exists(self.DB_PATH):
-            os.remove(self.DB_PATH) 
+            os.remove(self.DB_PATH)
 
     def test_db_creation(self):
         # Should set up the DB if it doesn't exist already
         self.assertFalse(os.path.exists(self.DB_PATH))
-        Economy(TestReddit(), self.BASE_CONFIG)
+        Economy(MockReddit(), self.BASE_CONFIG)
         self.assertTrue(os.path.exists(self.DB_PATH))
 
     def test_retrieve_user_inventory(self):
         # Should make a new record if one does not exist
-        economy = Economy(TestReddit(), self.BASE_CONFIG)
-        user = TestUser()
+        economy = Economy(MockReddit(), self.BASE_CONFIG)
+        user = MockUser()
         sql = 'SELECT * FROM economy_users WHERE economy_users.reddit_id = ?'
         record = Database().connection.cursor().execute(sql, (user.id, )).fetchone()
 
@@ -49,9 +49,9 @@ class TestEconomy(unittest.TestCase):
             'reload_amount': 100,
             'reload_threshold': 99
         }
-        user = TestUser()
-        comment = TestComment(author=user)
-        economy = Economy(TestReddit(), self.BASE_CONFIG)
+        user = MockUser()
+        comment = MockComment(author=user)
+        economy = Economy(MockReddit(), self.BASE_CONFIG)
 
         economy.cmd_reload_funds(comment, command_attributes)
 
@@ -77,9 +77,9 @@ class TestEconomy(unittest.TestCase):
             'reload_threshold': 1000000
         }
 
-        user = TestUser()
-        comment = TestComment(author=user, body='!buy 10')
-        economy = Economy(TestReddit(), self.BASE_CONFIG)
+        user = MockUser()
+        comment = MockComment(author=user, body='!buy 10')
+        economy = Economy(MockReddit(), self.BASE_CONFIG)
 
         economy.cmd_reload_funds(comment, reload_command_attributes)
 
@@ -112,10 +112,10 @@ class TestEconomy(unittest.TestCase):
             'item_price': 10
         }
 
-        user = TestUser()
-        buy_comment = TestComment(author=user, body='!buy 10')
-        sell_comment = TestComment(author=user, body='!sell 10')
-        economy = Economy(TestReddit(), self.BASE_CONFIG)
+        user = MockUser()
+        buy_comment = MockComment(author=user, body='!buy 10')
+        sell_comment = MockComment(author=user, body='!sell 10')
+        economy = Economy(MockReddit(), self.BASE_CONFIG)
 
         economy.cmd_buy(buy_comment, buy_command_attributes)
 
@@ -142,9 +142,10 @@ class TestEconomy(unittest.TestCase):
             'text': '!add'
         }
 
-        user = TestUser()
-        comment = TestComment(author=user, body='!add')
-        economy = Economy(TestReddit(), self.BASE_CONFIG)
+        user = MockUser()
+        parent_comment = MockComment(author=MockUser())
+        comment = MockComment(author=user, body='!add', parent=parent_comment)
+        economy = Economy(MockReddit(), self.BASE_CONFIG)
 
         inventory = economy.retrieve_user_inventory(user)
         self.assertEqual(inventory['funds_available'], 0)
@@ -173,3 +174,19 @@ class TestEconomy(unittest.TestCase):
         inventory = economy.retrieve_user_inventory(parent_user)
         self.assertEqual(inventory['funds_available'], 0)
         self.assertEqual(inventory['items_available'], 1)
+
+    def test_cmd_list_inventory(self):
+        # Should reply to original comment with inventory
+        self_add_command_attributes = {
+            'text': '!add'
+        }
+
+        user = MockUser()
+        comment = MockComment(author=user, body='!add')
+        economy = Economy(MockReddit(), self.BASE_CONFIG)
+
+        self.assertEqual(len(comment.replies), 0)
+        
+        economy.cmd_list_inventory(comment)
+
+        self.assertEqual(len(comment.replies), 1)

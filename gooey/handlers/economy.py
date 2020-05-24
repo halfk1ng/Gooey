@@ -223,9 +223,8 @@ class Economy():
         if 'update_user_flair' in command_attributes and command_attributes['update_user_flair'] == True:
             self.cmd_set_user_flair_text(user, command_attributes)
 
-    def cmd_list_inventory(self, comment, command_attributes):
+    def cmd_list_inventory(self, comment):
         user = comment.author
-        inventory = self.retrieve_user_inventory(user)
 
         comment.reply(self.user_inventory_message(user))
 

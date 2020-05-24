@@ -1,26 +1,25 @@
 import uuid
+import weakref
 
-class TestReddit():
+class MockReddit:
     def __init__(self):
-        self.user = TestUser()
+        self.user = MockUser()
 
-class TestComment():
-    def __init__(self, comment_id=None, author=None, body='test', parent_limit=10):
+class MockComment:
+    def __init__(self, comment_id=None, author=None, body='test', parent=None):
         self.id = comment_id if comment_id else str(uuid.uuid1())
-        self.author = author if author else TestUser()
+        self.author = author if author else MockUser()
         self.body = body
-
-        if parent_limit > 0:
-            self.parent = self.parent(parent_limit - 1)
+        self.replies = []
+        self.parent = parent
 
     def reply(self, text):
-        pass
+        comment = MockComment(parent=self)
+        self.replies.append(comment)
+        return comment
 
-    def parent(self, parent_limit):
-        return TestComment(parent_limit=parent_limit)
-
-class TestUser():
-    def __init__(self, user_id=None, name='test'):
+class MockUser:
+    def __init__(self, user_id=None, name='RedditGooeyBot'):
         self.id = user_id if user_id else str(uuid.uuid1())
         self.name = name
 
