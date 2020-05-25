@@ -1,7 +1,7 @@
 import logging
 
 
-class Logger():
+class Logger:
 
     LOG_PATH = {
         'production': 'gooey.log',

@@ -2,7 +2,7 @@ import os
 import sqlite3 as db
 
 
-class Database():
+class Database:
 
     DB_PATH = { 
         'production': './gooey.db',

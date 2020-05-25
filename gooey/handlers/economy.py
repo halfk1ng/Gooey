@@ -5,7 +5,7 @@ import re
 import sqlite3
 
 
-class Economy():
+class Economy:
     def __init__(self, reddit, config):
         self.reddit = reddit
         self.config = config

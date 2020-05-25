@@ -1,7 +1,7 @@
 from handlers.errors import FunctionNotAllowed
 
 
-class SubmissionStream():
+class SubmissionStream:
     def __init__(self, reddit, config):
         self.reddit = reddit
         self.config = config

@@ -1,7 +1,7 @@
 from handlers.errors import FunctionNotAllowed
 
 
-class CommentStream():
+class CommentStream:
     def __init__(self, reddit, config):
         self.reddit = reddit
         self.config = config
