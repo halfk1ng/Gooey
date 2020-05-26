@@ -1,5 +1,7 @@
 **/*/env.py
+.flaskenv
 config.json
+venv/
 
 __pycache__/
 
