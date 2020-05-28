@@ -20,6 +20,7 @@ body {
 h1.container-header-title {
   padding-top: 0;
   margin-top: 0;
+  margin-bottom: 15px;
 }
 
 .error-message {
@@ -33,4 +34,16 @@ h1.container-header-title {
 
 .warning-glyphicon {
   font-size: 5vw;
+}
+
+.flash-message-container {
+  padding: 0;
+}
+
+.message-flash {
+  margin: 0;
+  border-radius: 5px;
+  padding: 5px;
+  width: 100%;
+  box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.1);
 }

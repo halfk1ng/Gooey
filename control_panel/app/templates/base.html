@@ -10,40 +10,56 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 {% endblock %}
 
-{% block navbar %}
-  <nav class="navbar navbar-default navbar-inverse">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('index') }}">Gooey v{{ VERSION }}</a>
-        </div>
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-              <li><a href="{{ url_for('index') }}">Home</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li>
-                <a href="#">
-                  Bot Status: 
-                  {% if BOT_STATUS == 'up' %}
-                  <span class="badge badge-success badge-success-navbar-override">Online</span>
-                  {% else %}
-                  <span class="badge badge-secondary badge-secondary-navbar-override">Offline</span>
-                  {% endif %}
-                </a>
-              </li>
-              {% if BOT_STATUS != 'up' %}
-              <li><a href="#">Start Bot</a></li>
-              {% endif %}
-            </ul>
-        </div>
-    </div>
-  </nav>
-{% endblock %}
+{% block body %}
+  {% block navbar %}
+    <nav class="navbar navbar-default navbar-inverse">
+      <div class="container">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="{{ url_for('index') }}">Gooey v{{ VERSION }}</a>
+          </div>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li>
+                  <a href="#">
+                    Bot Status: 
+                    {% if BOT_STATUS == 'up' %}
+                    <span class="badge badge-success badge-success-navbar-override">Online</span>
+                    {% else %}
+                    <span class="badge badge-secondary badge-secondary-navbar-override">Offline</span>
+                    {% endif %}
+                  </a>
+                </li>
+                {% if BOT_STATUS != 'up' %}
+                <li><a href="#">Start Bot</a></li>
+                {% endif %}
+              </ul>
+          </div>
+      </div>
+    </nav>
+  {% endblock %}
 
-{% block content %}{% endblock %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+   {% if messages %}
+     <div class="flash-message-container container container-fluid text-center">
+        {% for category, message in messages %}
+         <div class="message-flash bg-{{ category }}">
+           {{ message }}
+         </div>
+        {% endfor %}
+        <br />
+    </div>
+  {% endif %}
+ {% endwith %}
+
+ {% block content %}{% endblock %}
+
+{% endblock %}

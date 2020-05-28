@@ -1,4 +1,4 @@
-{% extends 'bootstrap/base.html' %}
+{% extends "base.html" %}
 
 {% block title %} 
   Gooey v{{ VERSION }} Control Panel 
@@ -9,3 +9,76 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/new.css') }}">
 {% endblock %}
 
+{% block content %}
+  <div class="container-main container container-fluid text-center">
+    <h1 class="container-header-title">Create a new Reddit bot</h1>
+    <div class="form-info-container row">
+      <form action="new" method="post" class="form-container col-xs-8" novalidate>
+        <div class="form-action-container row">
+          {{ form.hidden_tag() }}
+          <p class="col-xs-4 text-right">
+            {{ form.username.label }}
+          </p>
+          <p class="col-xs-4 form-box text-left">
+            {{ form.username }}
+            {% for error in form.username.errors %}
+            <span class="error-message validation-error">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="form-action-container row">
+          <p class="col-xs-4 text-right ">
+            {{ form.password.label }}
+          </p>
+          <p class="col-xs-4 form-box text-left">
+            {{ form.password }}
+            {% for error in form.password.errors %}
+            <span class="error-message validation-error">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="form-action-container row">
+          <p class="col-xs-4 text-right">
+            {{ form.client_id.label }}
+          </p>
+          <p class="col-xs-4 form-box text-left">
+            {{ form.client_id }}
+            {% for error in form.client_id.errors %}
+            <span class="error-message validation-error">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="form-action-container row">
+          <p class="col-xs-4 text-right">
+            {{ form.client_secret.label }}
+          </p>
+          <p class="col-xs-4 form-box text-left">
+            {{ form.client_secret}}
+            {% for error in form.client_secret.errors %}
+            <span class="error-message validation-error">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="form-action-container row">
+          <p class="col-xs-4 text-right">
+            {{ form.bot_type.label }}
+          </p>
+          <p class="col-xs-4 form-box text-left">
+            {{ form.bot_type }}
+            {% for error in form.bot_type.errors %}
+            <span class="error-message validation-error">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="form-action-container row">
+          <p class="col-xs-8 col-xs-offset-2">
+            {{ form.submit() }}
+          </p>
+        </div>
+      </form>
+      <div class="info-container col-xs-4">
+        This is the info column
+      </div>
+    </div>
+  </div>
+{% endblock %}
