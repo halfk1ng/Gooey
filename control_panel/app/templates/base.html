@@ -4,8 +4,14 @@
   Gooey v{{ VERSION }} Control Panel 
 {% endblock %}
 
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{% endblock %}
+
 {% block navbar %}
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-default navbar-inverse">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -18,7 +24,22 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('index') }}">Home</a></li>
+              <li><a href="{{ url_for('index') }}">Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <a href="#">
+                  Bot Status: 
+                  {% if BOT_STATUS == 'up' %}
+                  <span class="badge badge-success badge-success-navbar-override">Online</span>
+                  {% else %}
+                  <span class="badge badge-secondary badge-secondary-navbar-override">Offline</span>
+                  {% endif %}
+                </a>
+              </li>
+              {% if BOT_STATUS != 'up' %}
+              <li><a href="#">Start Bot</a></li>
+              {% endif %}
             </ul>
         </div>
     </div>

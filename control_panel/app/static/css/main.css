@@ -1,0 +1,36 @@
+body {
+  background-color: #DAE0E2;
+}
+
+.badge-success-navbar-override {
+  background-color: #28a745;
+}
+
+.badge-secondary-navbar-override {
+  background-color: #6c757d;
+}
+
+.container-main {
+  background-color: white;
+  box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.1);
+  padding: 25px;
+  border-radius: 5px;
+}
+
+h1.container-header-title {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.error-message {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.error-btn {
+  width: 100%;
+}
+
+.warning-glyphicon {
+  font-size: 5vw;
+}

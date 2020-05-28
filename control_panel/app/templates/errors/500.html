@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block styles %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+  <div class="container-main container container-fluid text-center">
+    <h1 class="container-header-title">Error: 500 Internal Server Error</h1>
+    <span class="warning-glyphicon glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+    <div class="error-message error-class-404">
+      If this error continues, please consider logging an error report to help diagnose the issue.
+    </div>
+    <div class="error-button-container row">
+      <div class="col-xs-4 col-xs-offset-2">
+        <a href="{{ url_for('index') }}" class="error-btn btn btn-primary">Home</a>
+      </div>
+      <div class="col-xs-4">
+        <a href="https://github.com/GooeyBot/Gooey/issues/new" class="error-btn btn btn-warning">Log Issue</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
