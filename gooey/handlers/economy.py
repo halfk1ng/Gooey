@@ -128,7 +128,7 @@ class Economy:
         if self.fn is None:
             raise FunctionNotAllowed('Function "{}" not allowed'.format(fn_name))
 
-        Logger().log_function_call(self.fn, command_attributes, comment=comment)
+        Logger().log_function_call(self.fn, command_attributes, caller=self, comment=comment)
         self.fn(comment, command_attributes)
 
     def cmd_reload_funds(self, comment, command_attributes):

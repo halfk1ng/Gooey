@@ -6,3 +6,6 @@ class FunctionNotAllowed(Exception):
 
 class CommandNotMatched(Exception):
     pass
+
+class UnknownCaller(Exception):
+    pass
