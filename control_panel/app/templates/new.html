@@ -61,11 +61,11 @@
         </div>
         <div class="form-action-container row">
           <p class="col-xs-4 text-right">
-            {{ form.bot_type.label }}
+            {{ form.handler.label }}
           </p>
           <p class="col-xs-4 form-box text-left">
-            {{ form.bot_type }}
-            {% for error in form.bot_type.errors %}
+            {{ form.handler }}
+            {% for error in form.handler.errors %}
             <span class="error-message validation-error">[{{ error }}]</span>
             {% endfor %}
           </p>

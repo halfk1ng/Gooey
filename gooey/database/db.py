@@ -6,7 +6,7 @@ class Database:
 
     DB_PATH = { 
         'production': './gooey.db',
-        'development': './gooey_dev.db',
+        'development': './gooey_development.db',
         'test': './gooey_test.db'
     }
 

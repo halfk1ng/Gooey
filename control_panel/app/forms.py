@@ -13,5 +13,5 @@ class BaseBotForm(FlaskForm):
     password = PasswordField('Reddit Password', validators=[DataRequired()])
     client_id = PasswordField('Client ID', validators=[DataRequired()])
     client_secret = PasswordField('Client Secret', validators=[DataRequired()])
-    bot_type = SelectField('Bot Type', choices=bot_pair_selection_options, default=0, validators=[DataRequired(), AnyOf(values=VALID_BOT_TYPES)])
+    handler = SelectField('Bot Type', choices=bot_pair_selection_options, default=0, validators=[DataRequired(), AnyOf(values=VALID_BOT_TYPES)])
     submit = SubmitField('Create')
