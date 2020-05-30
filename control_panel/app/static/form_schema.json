@@ -1,0 +1,29 @@
+{
+  "economy_commands": [
+    {
+      "function_name": "buy",
+      "text": "string",
+      "item_price": "integer"
+    },
+    {
+      "function_name": "sell",
+      "text": "string",
+      "item_price": "integer"
+    },
+    {
+      "function_name": "reload_funds",
+      "text": "string",
+      "item_price": "integer",
+      "reload_amount": "integer"
+    },
+    {
+      "function_name": "add",
+      "text": "string",
+      "update_user_flair": false
+    },
+    {
+      "function_name": "list_inventory",
+      "text": "string"
+    }
+  ]
+}

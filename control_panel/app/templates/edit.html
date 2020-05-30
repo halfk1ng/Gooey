@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %} 
+  Gooey v{{ VERSION }} Control Panel 
+{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/new.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="container-main container container-fluid text-center">
+    <h1 class="container-header-title">Editing Bot {{ name }}</h1>
+    <hr>
+    <h2>Available Actions</h2>
+      {% for field in form %}
+        {{ field }}
+      {% endfor %}
+  </div>
+{% endblock %}

@@ -1,5 +1,8 @@
 import os
 import json
+import importlib
+import inspect
+import re
 
 VALID_FILENAMES = {
     'production': 'config.json',
@@ -12,6 +15,32 @@ DEFAULT_INDENT = 2
 
 class ConfigAlreadyExists(Exception):
     pass
+
+class FormNotFound(Exception):
+    pass
+
+class FormSelector:
+    @staticmethod
+    def select_form_for_bot_type(bot_type):
+        config = BotConfigBuilder.load_bot_config()
+        titleized_handler = ''.join(x.title() for x in config['handler'].split('_'))
+        form_class = 'Edit{}BotForm'.format(titleized_handler)
+
+        if form_class in FormSelector.available_forms():
+            module = importlib.import_module('app.forms')
+            form = getattr(module, form_class)
+            return form
+        else:
+            raise FormNotFound('Form "{}" not found.'.format(form_class))
+
+    @staticmethod
+    def available_forms():
+        import app.forms as Forms
+
+        return [class_[0] for class_ in inspect.getmembers(Forms, inspect.isclass) if FormSelector.is_valid_form(class_)]
+
+    def is_valid_form(class_):
+        return bool(re.match(r'Edit.*BotForm', class_[0]))
 
 class BotConfigBuilder:
     @staticmethod
@@ -51,6 +80,11 @@ class BotConfigBuilder:
 
         for field in REDDIT_FIELDS:
             reddit_fields_dict[field] = data.pop(field)
+
+        with open( os.path.abspath('./../VERSION'), 'r' ) as file:
+            version = file.read()
+
+        reddit_fields_dict['user_agent'] = 'Reddit bot /u/{} powered by Gooey v{}'.format(reddit_fields_dict['username'], version)
 
         return { 'reddit': reddit_fields_dict }
 

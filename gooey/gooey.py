@@ -8,10 +8,17 @@ from reddit import reddit
 import sys
 import traceback
 
+VALID_FILENAMES = {
+'production': 'config.json',
+'development': 'config_development.json',
+'test': 'config_test.json'
+}
+CONFIG_FILENAME = VALID_FILENAMES[os.environ['FLASK_ENV']] if os.environ['FLASK_ENV'] in VALID_FILENAMES else VALID_FILENAMES['test']
+CONFIG_PATH = os.path.abspath('./{}'.format(CONFIG_FILENAME))
 
 class Gooey:
 
-    config = load_config('./config.json')
+    config = load_config(CONFIG_PATH)
     _ALLOWED_HANDLERS = load_allowed_handlers('./gooey/handlers')
 
     def __init__(self):
@@ -32,7 +39,7 @@ class Gooey:
         
 
 if __name__ == '__main__':
-    config = load_config('./config.json')
+    config = load_config(CONFIG_PATH)
     if 'run_in_loop' in config.keys() and config['run_in_loop'] == True:
         while True:
             try:

@@ -1,6 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, SubmitField
+from wtforms import *
 from wtforms.validators import DataRequired, Length, AnyOf
+import os
+import json
+
+SCHEMA_PATH = os.path.abspath('./app/static/form_schema.json')
+
+class ActionForm(FlaskForm):
+    pass
 
 class BaseBotForm(FlaskForm):
 
@@ -15,3 +22,26 @@ class BaseBotForm(FlaskForm):
     client_secret = PasswordField('Client Secret', validators=[DataRequired()])
     handler = SelectField('Bot Type', choices=bot_pair_selection_options, default=0, validators=[DataRequired(), AnyOf(values=VALID_BOT_TYPES)])
     submit = SubmitField('Create')
+
+class EditEconomyBotForm(FlaskForm):
+
+    HANDLER_CONTAINER = 'economy_commands'
+
+    command_container = HiddenField('command_container', default=HANDLER_CONTAINER)
+    submit = SubmitField('Update')
+
+class ActionFormLoader:
+    def __init__(self, form):
+        self.form = form
+        self.HANDLER_CONTAINER = form.HANDLER_CONTAINER
+
+    def load_action_fields(self):
+        with open(SCHEMA_PATH) as file:
+            json_file = json.load(file)
+            schema = json_file[self.HANDLER_CONTAINER]
+
+        for function in schema:
+            function_subform = ActionForm
+
+            setattr(function_subform, 'function_name', StringField(function['function_name']))
+            setattr(self.form, function['function_name'], FieldList(FormField(function_subform)))
