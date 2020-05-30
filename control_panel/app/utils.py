@@ -34,7 +34,7 @@ class BotConfigBuilder:
             with open(CONFIG_PATH) as file:
                 data = json.load(file)
         else:
-            save_bot_config({})
+            BotConfigBuilder.save_bot_config({})
             data = {}
 
         return data
