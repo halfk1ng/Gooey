@@ -1,3 +1,30 @@
 .validation-error {
   color: red;
 }
+
+.action-form-field-box {
+  border-radius: 5px;
+  padding: 7px;
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+.action-form-table {
+  width: 100%;
+  margin: 0;
+}
+
+.action-form-table tbody {
+  width: 100%;
+  margin: auto;
+}
+
+.action-form-table tbody th {
+  text-align: right;
+  margin-right: 5px;
+}
+
+.action-form-table tbody td {
+  margin: auto;
+}

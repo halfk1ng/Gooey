@@ -12,6 +12,7 @@ VALID_FILENAMES = {
 CONFIG_FILENAME = VALID_FILENAMES[os.environ['FLASK_ENV']] if os.environ['FLASK_ENV'] in VALID_FILENAMES else VALID_FILENAMES['test']
 CONFIG_PATH = os.path.abspath('./../{}'.format(CONFIG_FILENAME))
 DEFAULT_INDENT = 2
+IGNORABLES = ['csrf_token', 'submit']
 
 class ConfigAlreadyExists(Exception):
     pass
@@ -90,7 +91,12 @@ class BotConfigBuilder:
 
     @staticmethod
     def ignore_useless_keys(data):
-        IGNORABLES = ['csrf_token', 'submit']
-
         for ignorable in IGNORABLES:
             data.pop(ignorable)
+
+    @staticmethod
+    def ignorable_fields():
+        ignorables = ['command_container', 'submit', 'csrf_token']
+        ignorables.append(IGNORABLES)
+
+        return ignorables

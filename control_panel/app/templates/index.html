@@ -10,7 +10,7 @@
     <h1 class="container-header-title">Welcome to the Gooey v{{ VERSION }} Control Panel!</h1>
     <div class="button-container container container-fluid row">
       <div class="btn-box col-xs-4">
-        <a href="#" class="btn btn-primary btn-index">
+        <a href="{{ url_for('edit') }}" class="btn btn-primary btn-index">
           <span class="glyph-btn glyphicon glyphicon-wrench" aria-hidden="true"></span>
           <br />
           Manage Existing Bot

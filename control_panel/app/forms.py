@@ -31,6 +31,13 @@ class EditEconomyBotForm(FlaskForm):
     submit = SubmitField('Update')
 
 class ActionFormLoader:
+
+    FIELD_TYPES = {
+        'string': StringField,
+        'boolean': BooleanField,
+        'integer': IntegerField
+    }
+
     def __init__(self, form):
         self.form = form
         self.HANDLER_CONTAINER = form.HANDLER_CONTAINER
@@ -41,7 +48,17 @@ class ActionFormLoader:
             schema = json_file[self.HANDLER_CONTAINER]
 
         for function in schema:
-            function_subform = ActionForm
+            titleized_fn_name = ''.join([word.title() for word in function['function_name'].split('_')])
+            function_subform_class = type('{}ActionForm'.format(titleized_fn_name), (FlaskForm, ), {})
 
-            setattr(function_subform, 'function_name', StringField(function['function_name']))
-            setattr(self.form, function['function_name'], FieldList(FormField(function_subform)))
+            for field in function.keys():
+                value = function[field]
+                if value not in self.FIELD_TYPES:
+                    continue
+                else:
+                    field_instance = self.FIELD_TYPES[value](field)
+                    setattr(function_subform_class, field, field_instance)
+
+            # setattr(function_subform_class, 'function_name', StringField(function['function_name']))
+            field_list = FormField(function_subform_class)
+            setattr(self.form, function['function_name'], field_list)
