@@ -16,12 +16,12 @@
     <h2>Available Actions</h2>
 
     <form action="edit" method="post">
-      <div class="form-container row">
+      <div class="form-container row display-flex">
         {{ form.hidden_tag() }}
         {% for subform in subforms %}
-          <div class="action-form-container col-xs-4 mx-1">
-            <div class="action-form-field-box my-auto">
-              {{ subform.label }}
+          <div class="action-form-container col-xs-4">
+            <div class="action-form-field-box">
+              <h4>{{ subform.label }}</h4>
               {{ subform.__call__(class_='action-form-table') }}
             </div>
           </div>

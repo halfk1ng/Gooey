@@ -15,10 +15,13 @@ def new():
         try:
             BotConfigBuilder.build_new(form)
             flash('Bot configuration created successfully!', 'success')
+
+            return redirect( url_for('edit') )
         except ConfigAlreadyExists:
             flash('Bot configuration was not created. Existing configuration could not be overwritten.', 'danger')
             flash('If the problem persists, try deleting your existing configuration.', 'danger')
-        return redirect( url_for('index') )
+
+            return redirect( url_for('index') )
 
     return render_template('new.html', form=form)
 
@@ -34,7 +37,7 @@ def edit():
     form = form_class()
     subforms = [getattr(form, subform) for subform in form.data if subform not in BotConfigBuilder.ignorable_fields()]
 
-    return render_template('edit.html', name='GooeyBot', form=form, subforms=subforms)
+    return render_template('edit.html', name=bot_config['reddit']['username'], form=form, subforms=subforms)
 
 @app.errorhandler(404)
 def not_found_error(error):

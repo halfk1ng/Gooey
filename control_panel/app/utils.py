@@ -100,3 +100,7 @@ class BotConfigBuilder:
         ignorables.append(IGNORABLES)
 
         return ignorables
+
+def titleize_snake_case(text, spaces=False):
+    delimiter = ' ' if spaces else ''
+    return delimiter.join([word.title() for word in text.split('_')])

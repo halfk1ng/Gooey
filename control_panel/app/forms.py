@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import DataRequired, Length, AnyOf
+from app.utils import titleize_snake_case
 import os
 import json
 
@@ -38,9 +39,9 @@ class ActionFormLoader:
         'integer': IntegerField
     }
 
-    def __init__(self, form):
-        self.form = form
-        self.HANDLER_CONTAINER = form.HANDLER_CONTAINER
+    def __init__(self, form_class):
+        self.form_class = form_class
+        self.HANDLER_CONTAINER = form_class.HANDLER_CONTAINER
 
     def load_action_fields(self):
         with open(SCHEMA_PATH) as file:
@@ -48,7 +49,7 @@ class ActionFormLoader:
             schema = json_file[self.HANDLER_CONTAINER]
 
         for function in schema:
-            titleized_fn_name = ''.join([word.title() for word in function['function_name'].split('_')])
+            titleized_fn_name = titleize_snake_case(function['function_name'])
             function_subform_class = type('{}ActionForm'.format(titleized_fn_name), (FlaskForm, ), {})
 
             for field in function.keys():
@@ -56,9 +57,9 @@ class ActionFormLoader:
                 if value not in self.FIELD_TYPES:
                     continue
                 else:
-                    field_instance = self.FIELD_TYPES[value](field)
+                    titleized_field_name = titleize_snake_case(field, spaces=True)
+                    field_instance = self.FIELD_TYPES[value](titleized_field_name)
                     setattr(function_subform_class, field, field_instance)
 
-            # setattr(function_subform_class, 'function_name', StringField(function['function_name']))
             field_list = FormField(function_subform_class)
-            setattr(self.form, function['function_name'], field_list)
+            setattr(self.form_class, function['function_name'], field_list)

@@ -2,7 +2,20 @@
   color: red;
 }
 
+.display-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.action-form-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
 .action-form-field-box {
+  height: 100%;
   border-radius: 5px;
   padding: 7px;
   color: #fff;
@@ -13,6 +26,8 @@
 .action-form-table {
   width: 100%;
   margin: 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .action-form-table tbody {
