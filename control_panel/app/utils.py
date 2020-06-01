@@ -59,6 +59,10 @@ class BotConfigBuilder:
         BotConfigBuilder.save_bot_config(bot_config)
 
     @staticmethod
+    def config_already_exists():
+        return os.path.exists(CONFIG_PATH) and BotConfigBuilder.load_bot_config() != {}
+
+    @staticmethod
     def load_bot_config():
         if os.path.exists(CONFIG_PATH):
             with open(CONFIG_PATH) as file:
@@ -73,6 +77,11 @@ class BotConfigBuilder:
     def save_bot_config(data):
         with open(CONFIG_PATH, 'w') as file:
             json.dump(data, file, indent=DEFAULT_INDENT)
+
+    @staticmethod
+    def delete_bot_config():
+        if os.path.exists(CONFIG_PATH):
+            os.remove(CONFIG_PATH)
 
     @staticmethod
     def build_reddit_information(data):

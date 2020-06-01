@@ -9,13 +9,23 @@
   <div class="container-main container container-fluid text-center">
     <h1 class="container-header-title">Welcome to the Gooey v{{ VERSION }} Control Panel!</h1>
     <div class="button-container container container-fluid row">
-      <div class="btn-box col-xs-4">
-        <a href="{{ url_for('new') }}" class="btn btn-success btn-index">
-          <span class="glyph-btn glyphicon glyphicon-pencil" aria-hidden="true"></span>
-          <br />
-          Create a New Bot
-        </a>
-      </div>
+      {% if display_delete_button %}
+        <div class="btn-box col-xs-4">
+          <a href="{{ url_for('delete') }}" class="btn btn-danger btn-index">
+            <span class="glyph-btn glyphicon glyphicon-trash" aria-hidden="true"></span>
+            <br />
+            Delete Existing Bot
+          </a>
+        </div>
+      {% else %}
+        <div class="btn-box col-xs-4">
+          <a href="{{ url_for('new') }}" class="btn btn-success btn-index">
+            <span class="glyph-btn glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            <br />
+            Create a New Bot
+          </a>
+        </div>
+      {% endif %}
       <div class="btn-box col-xs-4">
         <a href="{{ url_for('edit') }}" class="btn btn-primary btn-index">
           <span class="glyph-btn glyphicon glyphicon-wrench" aria-hidden="true"></span>
