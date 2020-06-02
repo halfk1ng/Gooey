@@ -48,7 +48,11 @@ def delete():
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
     if request.method == 'POST':
-        flash('Success!', 'success')
+        form_data = request.form.to_dict()
+
+        BotConfigBuilder.build_from_form(form_data)
+
+        flash('Bot configuration was successfully updated.', 'success')
         return redirect( url_for('index') )
     elif request.method == 'GET':
         if not BotConfigBuilder.config_already_exists():
@@ -60,7 +64,7 @@ def edit():
         form_class = FormSelector.select_form_for_bot_type(bot_config['handler'])
         ActionFormLoader(form_class).load_action_fields()
         form = form_class()
-        subforms = [getattr(form, subform) for subform in form.data if subform not in BotConfigBuilder.ignorable_fields()]
+        subforms = [getattr(form, subform) for subform in form.data if subform not in BotConfigBuilder.ignorable_view_fields()]
 
         return render_template('edit.html', name=bot_config['reddit']['username'], form=form, subforms=subforms)
 

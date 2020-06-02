@@ -59,6 +59,35 @@ class BotConfigBuilder:
         BotConfigBuilder.save_bot_config(bot_config)
 
     @staticmethod
+    def build_from_form(form_data):
+        BotConfigBuilder.ignore_useless_keys(form_data, form=True)
+        command_list = form_data['command_container']
+        arranged_data = { command_list: [] }
+
+        for key in form_data:
+            if key == 'command_container':
+                continue
+
+            function_name, new_key = key.split('-')
+
+            function_already_present = False
+            for datum in arranged_data[command_list]:
+                if function_name in datum['function_name']:
+                    datum[new_key] = form_data[key]
+                    function_already_present = True
+                    continue
+
+            if not function_already_present:
+                arranged_data[command_list].append({
+                    'function_name': function_name,
+                    new_key: form_data[key]
+                })
+
+        config = BotConfigBuilder.load_bot_config()
+        config.update(arranged_data)
+        BotConfigBuilder.save_bot_config(config)
+
+    @staticmethod
     def config_already_exists():
         return os.path.exists(CONFIG_PATH) and BotConfigBuilder.load_bot_config() != {}
 
@@ -99,16 +128,25 @@ class BotConfigBuilder:
         return { 'reddit': reddit_fields_dict }
 
     @staticmethod
-    def ignore_useless_keys(data):
-        for ignorable in IGNORABLES:
+    def ignore_useless_keys(data, form=False):
+        if form:
+            ignorables = BotConfigBuilder.useless_form_fields(data)
+        else:
+            ignorables = IGNORABLES
+
+        for ignorable in ignorables:
             data.pop(ignorable)
 
     @staticmethod
-    def ignorable_fields():
+    def ignorable_view_fields():
         ignorables = ['command_container', 'submit', 'csrf_token']
         ignorables.append(IGNORABLES)
 
         return ignorables
+
+    @staticmethod
+    def useless_form_fields(data):
+        return [field for field in data if field.split('-')[-1] in IGNORABLES]
 
 def titleize_snake_case(text, spaces=False):
     delimiter = ' ' if spaces else ''

@@ -43,3 +43,7 @@
 .action-form-table tbody td {
   margin: auto;
 }
+
+input[type=text] {
+  color: black;
+}
