@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import DataRequired, Length, AnyOf
-from app.utils import titleize_snake_case
+from app.utils import titleize_snake_case, remove_boolean
 import os
 import json
 
@@ -58,7 +58,8 @@ class ActionFormLoader:
                     continue
                 else:
                     titleized_field_name = titleize_snake_case(field, spaces=True)
-                    field_instance = self.FIELD_TYPES[value](titleized_field_name)
+                    field_name = remove_boolean(titleized_field_name)
+                    field_instance = self.FIELD_TYPES[value](field_name)
                     setattr(function_subform_class, field, field_instance)
 
             setattr(function_subform_class, 'is_enabled_boolean', BooleanField('Enabled'))

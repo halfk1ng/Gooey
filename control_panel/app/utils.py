@@ -160,3 +160,6 @@ class BotConfigBuilder:
 def titleize_snake_case(text, spaces=False):
     delimiter = ' ' if spaces else ''
     return delimiter.join([word.title() for word in text.split('_')])
+
+def remove_boolean(text):
+    return re.sub('Boolean', '', text)
