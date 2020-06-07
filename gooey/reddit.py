@@ -1,10 +1,16 @@
-from env import set_vars
-import os
 import praw
 
-set_vars()
-reddit = praw.Reddit(username=os.environ['REDDIT_USERNAME'],
-                     password=os.environ['REDDIT_PASSWORD'],
-                     client_id=os.environ['REDDIT_CLIENT_ID'],
-                     client_secret=os.environ['REDDIT_CLIENT_SECRET'],
-                     user_agent=os.environ['REDDIT_USER_AGENT'])
+
+class Reddit:
+    def __init__(self, config):
+        self.config = config
+    
+    def build(self):
+        reddit_config = self.config['reddit']
+
+        return praw.Reddit(username=reddit_config['username'],
+                           password=reddit_config['password'],
+                           client_id=reddit_config['client_id'],
+                           client_secret=reddit_config['client_secret'],
+                           user_agent=reddit_config['user_agent'])
+            

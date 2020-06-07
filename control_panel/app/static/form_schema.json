@@ -19,7 +19,7 @@
     {
       "function_name": "add",
       "text": "string",
-      "update_user_flair": "boolean"
+      "update_user_flair_boolean": "boolean"
     },
     {
       "function_name": "list_inventory",

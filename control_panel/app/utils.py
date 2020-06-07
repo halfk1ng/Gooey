@@ -73,7 +73,11 @@ class BotConfigBuilder:
             function_already_present = False
             for datum in arranged_data[command_list]:
                 if function_name in datum['function_name']:
-                    datum[new_key] = form_data[key]
+                    if 'boolean' in new_key:
+                        value = len(form_data[key]) > 0
+                    else:
+                        value = form_data[key]
+                    datum[new_key] = value
                     function_already_present = True
                     continue
 
@@ -85,6 +89,7 @@ class BotConfigBuilder:
 
         config = BotConfigBuilder.load_bot_config()
         config.update(arranged_data)
+        config[command_list] = [command for command in config[command_list] if BotConfigBuilder.is_enabled(command)]
         BotConfigBuilder.save_bot_config(config)
 
     @staticmethod
@@ -147,6 +152,10 @@ class BotConfigBuilder:
     @staticmethod
     def useless_form_fields(data):
         return [field for field in data if field.split('-')[-1] in IGNORABLES]
+
+    @staticmethod
+    def is_enabled(command):
+        return 'is_enabled_boolean' in command.keys() and command['is_enabled_boolean']
 
 def titleize_snake_case(text, spaces=False):
     delimiter = ' ' if spaces else ''

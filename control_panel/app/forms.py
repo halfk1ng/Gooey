@@ -61,5 +61,6 @@ class ActionFormLoader:
                     field_instance = self.FIELD_TYPES[value](titleized_field_name)
                     setattr(function_subform_class, field, field_instance)
 
+            setattr(function_subform_class, 'is_enabled_boolean', BooleanField('Enabled'))
             field_list = FormField(function_subform_class)
             setattr(self.form_class, function['function_name'], field_list)
